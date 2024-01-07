@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Resources\CustomerCollection;
 use App\Models\Customer;
 
 class CustomerController extends Controller
@@ -13,7 +14,13 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        //
+//        return Customer::all();
+
+        //So the json struct appear like: "name" : [{},{}]
+        //$customer = Customer::all();
+        //Split json in pages
+        $customer = Customer::paginate();
+        return new CustomerCollection($customer);
     }
 
     /**
