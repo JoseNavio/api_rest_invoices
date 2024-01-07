@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
+use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CustomerFactory extends Factory
 {
+    protected $model = \App\Models\Customer::class;
     /**
      * Define the model's default state.
      *
@@ -16,8 +19,17 @@ class CustomerFactory extends Factory
      */
     public function definition(): array
     {
+        //Individual or Business
+        $type = $this->faker->randomElement(['I', 'B']);
+        $name = $type == 'I' ? $this->faker->name() : $this->faker->company();
         return [
-            //
+            'name' => $name,
+            'type' => $type,
+            'email' => $this->faker->email(),
+            'address' => $this->faker->streetAddress(),
+            'city' => $this->faker->city(),
+            'state' => $this->faker->state(),
+            'postal_code' => $this->faker->postcode()
         ];
     }
 }

@@ -12,11 +12,12 @@ return new class extends Migration {
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->integer('customer_id');
             $table->integer('amount');
-            $table->integer('status');
-            $table->integer('billed_dated');
-            $table->integer('paid_dated')->nullable();
+            $table->char('status');
+            $table->date('billed_date');
+            $table->date('paid_date')->nullable();
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->timestamps();
         });
     }

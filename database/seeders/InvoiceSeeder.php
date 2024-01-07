@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Invoice;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,7 @@ class InvoiceSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        //Creates 50 instances of Invoice
+        Invoice::factory(50)->create();
     }
 }
