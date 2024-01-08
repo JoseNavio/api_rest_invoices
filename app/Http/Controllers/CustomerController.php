@@ -6,21 +6,26 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerCollection;
 use App\Models\Customer;
+use App\Filters\CustomerFilter;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filter = new CustomerFilter();
+        $queryItems = $filter->transform($request);
+        $customers = Customer::where($queryItems);
 //        return Customer::all();
 
         //So the json struct appear like: "name" : [{},{}]
         //$customer = Customer::all();
         //Split json in pages
-        $customer = Customer::paginate();
-        return new CustomerCollection($customer);
+//        $customer = Customer::paginate();
+        return new CustomerCollection($customers->paginate()->appends($request->query()));
     }
 
     /**
