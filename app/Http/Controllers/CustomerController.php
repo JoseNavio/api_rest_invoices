@@ -5,28 +5,53 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerCollection;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Filters\CustomerFilter;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+
+    /*
+     * Eloquent ORM queries:
+     *
+     * All: Customer::all();
+     * Find: Customer::find(1); //1 is the primary key
+     * First: Customer::first();
+     * Where: Customer::where('name', 'John')->get();
+     * Order by: Customer::orderBy('name', 'desc')->get();
+     * Count: Customer::count();
+     * Update: Customer::where('name', 'John')->update(['name' => 'Steve']);
+     * Delete: Customer::where('name', 'John')->delete();
+     */
+
     /**
-     * Display a listing of the resource.
+     * Display a json listing of the resource.
      */
     public function index(Request $request)
     {
         $filter = new CustomerFilter();
         $queryItems = $filter->transform($request);
-        $customers = Customer::where($queryItems);
-//        return Customer::all();
-
-        //So the json struct appear like: "name" : [{},{}]
-        //$customer = Customer::all();
-        //Split json in pages
-//        $customer = Customer::paginate();
+        //Include in the json the invoices of each customer
+        $includeInvoice = $request->query('includeInvoices');
+        //Eloquent ORM query
+        $customers = Customer::where($queryItems);//It can have 3 parameters: column, operator, value
+        //todo Comment this
+        if ($includeInvoice) {
+            $customers = $customers->with('invoices');
+        }
         return new CustomerCollection($customers->paginate()->appends($request->query()));
     }
+
+//    public function index()
+//    {
+//        //So the json struct appear like: "name" : [{},{}]
+//        $customer = Customer::all();
+//        //Split json in pages
+//        $customer = Customer::paginate();
+//        return $customer;
+//    }
 
     /**
      * Show the form for creating a new resource.
@@ -46,10 +71,16 @@ class CustomerController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * Create a Resource first...
      */
     public function show(Customer $customer)
     {
-        //
+        $includeInvoice = request()->query('includeInvoices');
+        if ($includeInvoice) {
+           return new CustomerResource($customer->loadMissing('invoices'));
+        }
+        return new CustomerResource($customer);
     }
 
     /**
